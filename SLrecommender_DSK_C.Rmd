@@ -1,0 +1,542 @@
+---
+title: "Simplification Logic  using fcaR "
+subtitle: " - and how closures are interesting to develop recommenders"
+author: "P. Cordero, M. Enciso, A. Mora, D. López"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::material:
+    highlight: kate
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+library(dplyr)
+library(kableExtra)
+library(fcaR)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+```
+
+# Moving towards applications
+
+How to guide an user (users) in a recommendation system?
+
+-   Closures of preferences of the users - blindly\
+-   Closures of preferences of the users - guided by attributes on the
+    left-hand side of the implications
+-   Preferences of the users - guided by attributes on minimal
+    generators
+-   Some of the above options enhanced by parallelism and/or cooperative
+    user guidance
+
+> > A Formal Concept Analysis approach to cooperative conversational
+> > recommendation . P. Cordero, M. Enciso, A. Mora, M. Ojeda, C. Rossi
+> > - International Journal of Computational Intelligence Systems (2020)
+> > 13(1) 1243--1252
+
+The knowledge inside the implications addresses us towards the
+development of some recommender systems.
+
+-   Based on logic which allows to manage the users' preferences by
+    following a conversational paradigm.
+-   Lazzy computation of minimal generators - on-demand computation of
+    minimal generators by means of an algorithm with polynomial delay.
+
+![](DataFlow3.png)\
+
+Results:
+
+![](experiment_objects3.png)\
+
+> > A conversational recommender system for diagnosis using fuzzy rules.
+> > P. Cordero, M. Enciso, D. López, A. Mora - Expert Systems With
+> > Applications 154 (2020) 113449
+
+Graded implications in the framework of Fuzzy Formal Concept Analysis
+are used as the knowledge guiding the recommendations.
+
+-   Conversational recommender systems have proven to be a good approach
+    in telemedicine, building a dialogue between the user and the
+    recommender based on user preferences provided at each step of the
+    conversation.
+-   We propose a conversational recommender system for medical diagnosis
+    using fuzzy logic.
+-   The recommender system has been used to provide differential
+    diagnosis between schizophrenia and schizoaffective and bipolar
+    disorders.
+
+![](DataFlow.png)
+
+We have obtained the following results in a extensive comparative:
+
+![](table.png)
+
+# Recommenders Systems using Simplification Logic
+
+-   Computation of closures\
+-   Computation of Minimal Generators\
+-   Computation of Lazzy Minimal Generators
+
+> > ... to develop automated reasoning methods.
+
+References:
+
+> > Angel Mora, Pablo Cordero, Manuel Enciso, Inmaculada Fortes, Gabriel
+> > Aguilera: Closure via functional dependence simplification. Int. J.
+> > Comput. Math. 89(4): 510-526 (2012) [Journal
+> > Link](https://www.tandfonline.com/doi/full/10.1080/00207160.2011.644275)
+
+> > Pablo Cordero, Manuel Enciso, Angel Mora, Manuel Ojeda-Aciego:
+> > Computing Minimal Generators from Implications: a Logic-guided
+> > Approach. CLA 2012: 187-198
+> > [PDF](http://ceur-ws.org/Vol-972/paper16.pdf)
+
+> > Pablo Cordero, Manuel Enciso, Angel Mora, Manuel Ojeda-Aciego,
+> > Carlos Rossi: Knowledge discovery in social networks by using a
+> > logic-based treatment of implications. Knowl. Based Syst. 87: 16-25
+> > (2015) [KBS
+> > Link](https://www.sciencedirect.com/science/article/abs/pii/S0950705115002725?via%3Dihub)
+
+> > Estrella Rodríguez Lorenzo, Kira V. Adaricheva, Pablo Cordero,
+> > Manuel Enciso, Angel Mora: Formation of the D-basis from
+> > implicational systems using Simplification logic. Int. J. Gen. Syst.
+> > 46(5): 547-568 (2017) [Taylor
+> > Link](https://www.tandfonline.com/doi/full/10.1080/03081079.2017.1349632)
+
+> > Fernando Benito Picazo, Pablo Cordero, Manuel Enciso, Angel Mora:
+> > Minimal generators, an affordable approach by means of massive
+> > computation. J. Supercomput. 75(3): 1350-1367 (2019) [J.
+> > Supercomputing
+> > Link](https://link.springer.com/article/10.1007/s11227-018-2453-z)
+
+> > A Formal Concept Analysis Approach to Cooperative Conversational
+> > Recommendation. Int. J. Comput. Intell. Syst. 13(1): 1243-1252
+> > (2020)
+> > [I.J.Comp.Intel.Syst.](https://www.atlantis-press.com/journals/ijcis/125943387)
+
+> > Pablo Cordero, Manuel Enciso, Domingo López-Rodríguez, Angel Mora: A
+> > conversational recommender system for diagnosis using fuzzy rules.
+> > Expert Syst. Appl. 154: 113449 (2020) [J. Expert Systems
+> > Link](https://www.sciencedirect.com/science/article/abs/pii/S0957417420302736?via%3Dihub)
+
+# fcaR package
+
+-   <https://github.com/Malaga-FCA-group/fcaR>
+
+-   More than 11000 downloads
+
+-   R language is one of the main tools in Machine Learning, Data
+    Science, Big Data, etc.
+
+-   **Reproducible Research: theoretical content + code R or Python or
+    ... + dataset - sharing with people - reproducible results**
+
+-   Promoting people using R language in these areas to know FCA
+
+# First Experiment
+
+    We import the formal context from a matrix to a  fcaR object named gradedfc.
+
+In Table 1, we show the dataset used in these examples. The dataset
+simulate a set of 8 subjects and 6 symptom attributes with degrees
+ranging in [0, 1]. The symptoms are named a, b, c, d, e, f. Two possible
+diseases are denoted as D1 and D2.
+
+```{r}
+library(fcaR)
+mymatrix <- read.csv2("~/Github/2021_ICFCARules_MinGen_Filtering/data/data_matrix.csv")
+gradedfc <- fcaR:::FormalContext$new(mymatrix)
+gradedfc
+plot(gradedfc)
+```
+
+> > Implications are computed using NextClosure (fuzzy version) from
+> > Radim Belohlavek.
+
+> > For classical case, Nextclosure algorithm is developed in fcaR.
+
+> > Now, we are developing the main algorithms to compute concept
+> > lattice and implications: FCbO, Fast Close-by-One, LinCbO, In-close.
+
+```{r}
+gradedfc$find_implications()
+gradedfc$implications$cardinality()
+gradedfc$implications
+implications <- gradedfc$implications$clone()
+```
+
+This set of implications is used as the core knowledge of a
+Conversational recommender.
+
+**Iteration 1:**
+
+We'll use the following subject data as starting point in the example
+conversations:
+
+```{r}
+Subject <- Set$new(attributes =gradedfc$attributes, sparse = TRUE)
+Subject$assign(attributes = c("a"),values = c(1))
+Subject
+```
+
+The computed closure is:
+
+```{r}
+closure <- implications$closure(Subject,reduce = TRUE)
+closure 
+```
+
+After applying Simplification Logic, the resulting set of simplified
+implications is:
+
+```{r}
+implications <- closure$implications
+implications
+```
+
+This gives a total of 18 implications in this step, instead of the
+initial 21 implications. As we haven't arrived to a valid class (D1, D2)
+in the closure, we proceed with the next iteration.
+
+**Iteration 2:**
+
+The user select other attribute:
+
+```{r}
+Subject$assign(attributes = c("e"),values = c(1))
+Subject
+```
+
+The computed closure is:
+
+```{r}
+closure <- implications$closure(Subject,reduce = TRUE)
+closure
+```
+
+After applying Simplification Logic, the resulting set of simplified
+implications is:
+
+```{r}
+implications <- closure$implications
+implications
+```
+
+This gives a total of 12 implications in this step, instead of the
+initial 21 implications. As we haven't arrived to a valid class (D1, D2)
+in the closure, we proceed with the next iteration.
+
+**Iteration 3:**
+
+The user select other attribute:
+
+```{r}
+Subject$assign(attributes = c("b"),values = c(0.5))
+Subject
+```
+
+The computed closure is:
+
+```{r}
+closure <- implications$closure(Subject,reduce = TRUE)
+closure
+```
+
+After applying Simplification Logic, the resulting set of simplified
+implications is:
+
+```{r}
+implications <- closure$implications
+implications
+```
+
+This gives a total of 12 implications in this step, instead of the
+initial 21 implications. As we haven't arrived to a valid class (D1, D2)
+in the closure, we proceed with the next iteration.
+
+**Iteration 4:**
+
+The user select other attribute:
+
+```{r}
+Subject$assign(attributes = c("c"),values = c(0.5))
+Subject
+```
+
+The computed closure is:
+
+```{r}
+closure <- implications$closure(Subject,reduce = TRUE)
+closure
+```
+
+After applying Simplification Logic, the resulting set of simplified
+implications is:
+
+```{r}
+implications <- closure$implications
+implications
+```
+
+This gives a total of 9 implications in this step, instead of the
+initial 21 implications. **In this iteration, we have arrived at a
+classification/recommendation present in the current closure: D2
+disease.** Thus, there is no need to make any further iteration.
+
+# Second Experiment
+
+This experiment has been done using the dataset named **Disease-Symptom
+Knowledge Database** containing a list of diseases given to a set of
+symptoms. See
+<http://people.dbmi.columbia.edu/~friedma/Projects/DiseaseSymptomKB/index.html>
+for more information about the dataset. The data in CSV format has been
+extracted from <https://github.com/anaymalpani/sytora>.
+
+In this document, we present an idea of how closures and implications
+reduced in the computation of the closures the execution traces of how
+we develop the recommender system.
+
+## Importing the dataset
+
+```{r import dataset, echo=FALSE, eval=TRUE,warning=FALSE, message=FALSE, display=FALSE}
+#setwd("~/Github/2021_ICFCARules_MinGen_Filtering")
+library(fcaR)
+library(Matrix)
+library(arules)
+library(devtools)
+devtools::load_all()
+
+#FC <- read.csv("~/Github/2021_ICFCARules_MinGen_Filtering/Ejemplos-pruebas/TB_1_2.csv", header=TRUE, sep=";")
+
+
+FC <- read.csv("/Volumes/GoogleDrive/Mi\ unidad/CooperativeFiltering/datasets/sytora-master/data/all-files-for-ml/all_pivoted.csv")
+ 
+
+head(FC[,1:24])
+
+# some pre-processing tasks
+rownames(FC) <- FC$Disease
+filas <- rownames(FC)
+FC$Disease <- NULL
+FC1 <-as.data.frame(sapply(FC, function(x) as.logical(x)))
+#View(head(FC1))
+rownames(FC) <- filas
+
+```
+
+The size of the dataset is:
+
+```{r}
+dim(FC)
+```
+
+## Using arules
+
+In Machine Learning Community the most used R package to manipulate
+rules is `arules`. Our R package named fcaR
+(<https://github.com/Malaga-FCA-group/fcaR>) has an intersting interface
+with arules:
+
+-   **promoting Machine Learning community to approach FCA community**
+
+We extract the rules using arules:
+
+```{r, eval=FALSE, echo=TRUE, warning=FALSE, message=FALSE, display=FALSE}
+rm(Rules, Rules1)
+my_support <- 0.005  
+rule_param = list(
+  supp = my_support,
+  conf = 1,
+  maxlen = 25
+)
+Rules <- apriori(FC1,parameter = rule_param)
+Rules1 <- Rules[!is.redundant(Rules)]
+cat("Non-redundant rules:n")
+Rules1
+arules::write.PMML(Rules1,"~/Github/2021_ICFCARules_MinGen_Filtering/Rules1_DSK.pmml")
+
+```
+
+> > 10013234 implications extracted from the dataset using arules
+
+> > Removing redundancy using method included in arules: 11844
+> > implications
+
+## Importing rules to fcaR
+
+```{r, eval=TRUE,echo=TRUE}
+Rules1 <- arules:::read.PMML("~/Github/2021_ICFCARules_MinGen_Filtering/Rules1_DSK.pmml")
+Rules1
+fcaR_fc <- fcaR:::FormalContext$new(FC1)
+fcaR_fc
+plot(fcaR_fc)
+fcaR_fc$implications$add(Rules1)
+fcaR_fc$implications$cardinality()
+head(fcaR_fc$implications)
+
+```
+
+## Removing redundancy
+
+First, we emphasize that simply applying the rules of Simplification
+Logic we can obtain a reduced set of implications. Using `fcaR` package
+the removing of redundancy can do in the following:
+
+```{r}
+ 
+fcaR_fc$implications$apply_rules(rules=c("generalization", "composition", "simplification"), 
+                            parallelize = TRUE)
+fcaR_fc$implications$cardinality()
+implications <- fcaR_fc$implications$clone() 
+head(implications)
+```
+
+## Using closures
+
+This set of implications is used as the core knowledge of a recommender
+system.
+
+> > We simulate a conversation process with a doctor trying to identify
+> > a disease. For instance, objects could be POI (points of interest)
+> > in a touristic place and attributes some desired features for a
+> > restaurant that I am searching.
+
+We'll use the following subject data as starting point in the example
+conversations:
+
+```{r}
+Subject <- Set$new(attributes =fcaR_fc$attributes, sparse = TRUE)
+Subject$assign(attributes = c("C0022107"),values = c(1))
+Subject
+```
+
+**Iteration 1:**
+
+The computed closure is:
+
+```{r}
+closure <- implications$closure(Subject,reduce = TRUE)
+closure$closure
+```
+
+After applying Simplification Logic, the resulting set of simplified
+implications is:
+
+```{r}
+closure <- implications$closure(Subject,reduce = TRUE)
+head(closure$implications)
+```
+
+This gives a total of `r closure$implications$cardinality()`
+implications in this step, instead of the initial
+`r fcaR_fc$implications$cardinality()` implications.
+
+With this closure we could identify:
+
+```{r}
+      objects  <-  fcaR_fc$extent(closure$closure)
+      objects
+```
+
+**Iteration 2:**
+
+The doctor selects a new attribute:
+
+```{r}
+Subject$assign(attributes = c("C0455769"),values = c(1))
+Subject
+
+closure <- implications$closure(Subject,reduce = TRUE)
+closure$closure
+```
+
+After applying Simplification Logic, the resulting set of simplified
+implications is:
+
+```{r}
+closure <- implications$closure(Subject,reduce = TRUE)
+head(closure$implications)
+```
+
+This gives a total of `r closure$implications$cardinality()`
+implications in this step, instead of the initial
+`r fcaR_fc$implications$cardinality()` implications.
+
+With this closure we could identify:
+
+```{r}
+      objects  <-      fcaR_fc$extent(closure$closure)
+      objects
+```
+
+**Iteration 3:**
+
+The doctor selects a new attribute:
+
+```{r}
+Subject$assign(attributes = c("C0237154"),values = c(1))
+Subject
+closure <- implications$closure(Subject,reduce = TRUE)
+closure$closure
+```
+
+After applying Simplification Logic, the resulting set of simplified
+implications is:
+
+```{r}
+head(closure$implications)
+```
+
+This gives a total of `r closure$implications$cardinality()`
+implications in this step, instead of the initial
+`r fcaR_fc$implications$cardinality()` implications.
+
+With this closure we could identify:
+
+```{r}
+       objects  <-  fcaR_fc$extent(closure$closure)
+      objects
+```
+
+**Iteration 4:**
+
+The doctor selects a new attribute
+
+```{r}
+Subject$assign(attributes = c("C0235198"),values = c(1))
+Subject
+
+closure <- implications$closure(Subject,reduce = TRUE)
+closure$closure
+```
+
+After applying Simplification Logic, the resulting set of simplified
+implications is:
+
+```{r}
+head(closure$implications)
+```
+
+This gives a total of `r closure$implications$cardinality()`
+implications in this step, instead of the initial
+`r fcaR_fc$implications$cardinality()` implications.
+
+With this closure we have identified the disease:
+
+```{r}
+      objects  <-  fcaR_fc$extent(closure$closure)
+      objects$print()
+```
