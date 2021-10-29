@@ -120,20 +120,6 @@ sublattice <- lattice$sublattice(concepts)
 sublattice
 sublattice$plot(object_names = FALSE)
 
-
-# idx <- c(1, which(colSums(lattice$intents()[7:8, ]) > 0))
-# 
-# o <- order(colSums(lattice$intents()[, idx]))
-# idx <- o[1:10]
-# subl <- lattice$sublattice(idx)
-# multicolor_lattice(
-#   intents = subl$intents(),
-#   attributes = attr,
-#   colors = ambos_color,
-#   latex_file = "sublattice.tex"
-# )
-
-
 #### Implications ####
 implications <- fc3$implications
 implications
@@ -184,26 +170,4 @@ mg
 # Use minimal generators to compute the left-minimal basis
 left_minimal_basis <- mg$to_implications()
 left_minimal_basis$cardinality()
-
-
-# # colors
-# orig_color <- "steelblue1"
-# neg_color <- "sienna1"
-# ambos_color <- "white"
-# 
-# # The original
-# LL <- mg$get_matrices()
-# 
-# intents <- LL$intents
-# ints <- do.call(cbind, intents)
-# 
-# idx <- c(1, which(colSums(ints[7:8, ]) > 0))
-# 
-# multicolor_lattice(
-#   intents = ints[, idx],
-#   attributes = attr,
-#   colors = ambos_color,
-#   latex_file = "mingen.tex"
-# )
-
 
